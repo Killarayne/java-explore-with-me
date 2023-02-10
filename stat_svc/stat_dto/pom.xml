@@ -7,7 +7,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stat_svc_dto</artifactId>
+    <artifactId>stat_dto</artifactId>
     <packaging>jar</packaging>
 
     <name>stat_svc_dto</name>

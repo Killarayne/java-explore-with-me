@@ -19,12 +19,12 @@ public class StatServerController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    void saveHit(@RequestBody EndpointHitDto endpointHitDto) {
+    public void saveHit(@RequestBody EndpointHitDto endpointHitDto) {
         statService.saveHit(endpointHitDto);
     }
 
     @GetMapping("/stats")
-    List<ViewStatsDto> getStats(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    public List<ViewStatsDto> getStats(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                 @RequestParam(value = "start") LocalDateTime start,
                                 @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                 @RequestParam(value = "end") LocalDateTime end,
