@@ -1,6 +1,8 @@
 package ru.practicum.main.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.dto.CategoryDto;
 import ru.practicum.main.dto.NewCategoryDto;
@@ -32,11 +34,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getCategories(Integer from, Integer size) {
-        return categoryMapper.toCategoryDtoList(categoryRepository.findAllCategoriesWithLimitAndOffset(from, size));
+        Pageable page = PageRequest.of(from / size, size);
+        return categoryMapper.toCategoryDtoList(categoryRepository.findAll(page).toList());
     }
 
     @Override
-    public CategoryDto getCategory(Integer catId) {
+    public CategoryDto getCategory(Long catId) {
         Category category = categoryRepository.findById(Long.valueOf(catId))
                 .orElseThrow(() -> new CategoryNotExistException("Category doesn't exist"));
         return categoryMapper.toCategoryDto(category);
@@ -44,8 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long catId) {
-        categoryRepository.findById(Long.valueOf(catId))
-                .orElseThrow(() -> new CategoryNotExistException("Category doesn't exist"));
         if (eventRepository.existsByCategoryId(catId)) {
             throw new CategoryIsNotEmptyException("The category is not empty");
         }
@@ -53,8 +54,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto updateCategory(Integer catId, CategoryDto categoryDto) {
-        Category category = categoryRepository.findById(Long.valueOf(catId))
+    public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
+        Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new CategoryNotExistException("Category doesn't exist"));
         if (categoryRepository.existsByName(categoryDto.getName())) {
             throw new NameAlreadyExistException("Can't update category because name: " + categoryDto.getName() + " already used by another category");

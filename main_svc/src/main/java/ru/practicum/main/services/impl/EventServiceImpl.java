@@ -1,6 +1,8 @@
 package ru.practicum.main.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.client.StatClient;
 import ru.practicum.dto.EndpointHitDto;
@@ -54,19 +56,20 @@ public class EventServiceImpl implements EventService {
         Event event = eventMapper.toEventModel(newEventDto);
         event.setCategory(category);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotExistException(""));
+                .orElseThrow(() -> new UserNotExistException("Can't create event, the user with id = " + userId + " doesn't exist"));
         event.setInitiator(user);
         return eventMapper.toEventFullDto(eventRepository.save(event));
     }
 
     @Override
     public List<EventShortDto> getEvents(Long userId, Integer from, Integer size) {
-        return eventMapper.toEventShortDtoList(eventRepository.findAllWhereInitiatorIdWithLimitAndOffset(userId, from, size));
+        Pageable page = PageRequest.of(from / size, size);
+        return eventMapper.toEventShortDtoList(eventRepository.findAllByInitiatorId(userId, page).toList());
     }
 
     @Override
     public EventFullDto updateEvent(Long eventId, UpdateEventAdminDto updateEventAdminDto) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotExistException(""));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotExistException("Can't update event with id = " + eventId + ", the event doesn't exist"));
         if (updateEventAdminDto == null) {
             return eventMapper.toEventFullDto(event);
         }

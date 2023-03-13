@@ -1,6 +1,8 @@
 package ru.practicum.main.models;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.practicum.main.enums.EventState;
 
@@ -11,7 +13,8 @@ import java.time.format.DateTimeFormatter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Events", schema = "public")
+@Table(name = "events", schema = "public")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,12 +23,12 @@ public class Event {
     @OneToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
-    @Column(name = "confirmed_Requests")
+
     private int confirmedRequests;
     @Column(name = "created_On")
     private LocalDateTime createdOn;
     private String description;
-    @Column(name = "event_date")
+
     private LocalDateTime eventDate;
     @OneToOne
     @JoinColumn(name = "initiator_id", referencedColumnName = "id")
@@ -34,11 +37,8 @@ public class Event {
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
     private Boolean paid;
-    @Column(name = "participant_Limit")
     private int participantLimit;
-    @Column(name = "published_On")
     private LocalDateTime publishedOn;
-    @Column(name = "request_Moderation")
     private Boolean requestModeration;
     @Enumerated(EnumType.STRING)
     private EventState state;
@@ -81,6 +81,4 @@ public class Event {
         this.views = views;
     }
 
-    protected Event() {
-    }
 }

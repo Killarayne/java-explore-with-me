@@ -2,10 +2,11 @@ package ru.practicum.main.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.main.dto.UserDto;
 import ru.practicum.main.exceptions.NameAlreadyExistException;
-import ru.practicum.main.exceptions.UserNotExistException;
 import ru.practicum.main.mappers.UserMapper;
 import ru.practicum.main.repositories.UserRepository;
 import ru.practicum.main.services.UserService;
@@ -33,17 +34,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
         log.debug("Received users");
+        Pageable page = PageRequest.of(from / size, size);
         return !ids.isEmpty() ? userMapper.toUserDtoList(userRepository.findAllById(ids))
-                : userMapper.toUserDtoList(userRepository.findAllUserWithLimitAndOffset(from, size));
+                : userMapper.toUserDtoList(userRepository.findAll(page).toList());
     }
 
     @Override
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            log.warn("Wrong id, user with id: " + id + " doesn't exist!");
-            throw new UserNotExistException("Wrong id, user with id: " + id + " doesn't exist!");
-        }
-        log.debug("User with id: " + id + " was deleted ");
+        log.debug("User with id: {} was deleted ", id);
         userRepository.deleteById(id);
     }
 }

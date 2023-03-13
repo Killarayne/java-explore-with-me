@@ -106,9 +106,6 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Transactional
     public void deleteCompilation(Long compId) {
-        if (!compilationRepository.existsById(compId)) {
-            throw new CompilationNotExistException("Can't delete compilation - the compilation doesn't exist");
-        }
         compilationRepository.deleteById(compId);
         log.debug("Compilation with ID = {} is deleted", compId);
     }

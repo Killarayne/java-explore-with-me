@@ -1,5 +1,6 @@
 package ru.practicum.main;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -118,6 +119,15 @@ public class ErrorHandler {
     @ResponseBody
     public ApiError handleUserNotExistException(final UserNotExistException e) {
         return new ApiError("Can't delete user with this id", "User with this id doesn't exist",
+                HttpStatus.NOT_FOUND.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ApiError handleEmptyResultDataAccessException(final EmptyResultDataAccessException e) {
+        return new ApiError("It is impossible to do the operation", "data not found",
                 HttpStatus.NOT_FOUND.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
     }
 
