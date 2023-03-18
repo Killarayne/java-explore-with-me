@@ -30,6 +30,14 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
+    public ApiError handleUserNameAlreadyExistException(final CommentConflictException e) {
+        return new ApiError(e.getMessage(), "Integrity constraint has been violated.",
+                HttpStatus.CONFLICT.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
     public ApiError handleRequestAlreadyExistException(final RequestAlreadyExistException e) {
         return new ApiError(e.getMessage(), "Integrity constraint has been violated.",
                 HttpStatus.CONFLICT.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
@@ -158,7 +166,14 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleCategoryNotExistException(final CategoryNotExistException e) {
-        return new ApiError("Can't delete category with this id", "Category with this id doesn't exist",
+        return new ApiError(e.getMessage(), "Category with this id doesn't exist",
+                HttpStatus.NOT_FOUND.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleCommentNotExistException(final CommentNotExistException e) {
+        return new ApiError(e.getMessage(), "Category with this id doesn't exist",
                 HttpStatus.NOT_FOUND.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
     }
 }

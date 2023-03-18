@@ -80,5 +80,4 @@ public class Event {
         this.title = title;
         this.views = views;
     }
-
 }
