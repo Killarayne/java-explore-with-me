@@ -34,7 +34,7 @@ public class PrivateCommentController {
     public CommentDto updateComment(@RequestBody @Valid NewCommentDto newCommentDto,
                                     @PathVariable(value = "userId") Long userId,
                                     @PathVariable(value = "commentId") Long commentId) {
-        return commentService.updateComment(newCommentDto, userId, commentId);
+        return commentService.updateCommentByUser(newCommentDto, userId, commentId);
     }
 
     @GetMapping("/{commentId}")

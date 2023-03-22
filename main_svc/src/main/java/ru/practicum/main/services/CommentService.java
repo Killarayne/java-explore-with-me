@@ -9,7 +9,9 @@ import java.util.List;
 public interface CommentService {
     CommentDto createComment(NewCommentDto newCommentDto, Long userId, Long eventId);
 
-    CommentDto updateComment(NewCommentDto newCommentDto, Long userId, Long commentId);
+    CommentDto updateCommentByUser(NewCommentDto newCommentDto, Long userId, Long commentId);
+
+    CommentDto updateCommentByAdmin(NewCommentDto newCommentDto, Long commentId);
 
     CommentDto getCommentsByIdByUser(Long userId, Long commentId);
 

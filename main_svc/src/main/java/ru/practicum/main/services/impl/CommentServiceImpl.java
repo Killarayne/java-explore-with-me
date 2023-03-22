@@ -51,9 +51,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentDto updateComment(NewCommentDto newCommentDto, Long userId, Long commentId) {
-        Comment oldComment = commentsRepository.findById(commentId).orElseThrow(() -> new CommentNotExistException("Can't delete comment, if his owner another user or user/comment doesn't exist"));
-        userRepository.findById(userId).orElseThrow(() -> new UserNotExistException("Can't delete comment, if user doesn't exist"));
+    public CommentDto updateCommentByUser(NewCommentDto newCommentDto, Long userId, Long commentId) {
+        Comment oldComment = commentsRepository.findById(commentId).orElseThrow(() -> new CommentNotExistException("Can't update comment, comment doesn't exist"));
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotExistException("Can't delete comment, if user doesn't exist");
+        }
         if (!oldComment.getAuthor().getId().equals(userId)) {
             throw new CommentConflictException("Can't delete comment, if his owner another user");
         }
@@ -64,9 +66,21 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public CommentDto updateCommentByAdmin(NewCommentDto newCommentDto, Long commentId) {
+        Comment oldComment = commentsRepository.findById(commentId).orElseThrow(() -> new CommentNotExistException("Can't update comment, comment doesn't exist"));
+        oldComment.setText(newCommentDto.getText());
+        Comment savedComment = commentsRepository.save(oldComment);
+        log.debug("Comment with ID = {} was update", commentId);
+        return commentMapper.toCommentDto(savedComment);
+    }
+
+    @Override
     public CommentDto getCommentsByIdByUser(Long userId, Long commentId) {
         Comment comment = commentsRepository.findById(commentId).orElseThrow(() -> new CommentNotExistException("Can't get comment"));
-        userRepository.findById(userId).orElseThrow(() -> new UserNotExistException("Can't get comment, if user doesn't exist"));
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotExistException("Can't get comment, if user doesn't exist");
+        }
+
         if (!userId.equals(comment.getAuthor().getId())) {
             throw new CommentConflictException("Can't get comment created by another user");
         }
@@ -112,7 +126,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteCommentByUser(Long userId, Long commentId) {
         Comment comment = commentsRepository.findById(commentId).orElseThrow(() -> new CommentNotExistException("Can't delete comment, if his owner another user or user/comment doesn't exist"));
-        userRepository.findById(userId).orElseThrow(() -> new UserNotExistException("Can't delete comment, if user doesn't exist"));
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotExistException("Can't delete comment, if user doesn't exist");
+        }
+
         if (!comment.getAuthor().getId().equals(userId)) {
             throw new CommentConflictException("Can't delete comment, if his owner another user");
         }
